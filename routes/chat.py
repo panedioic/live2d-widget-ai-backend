@@ -1,11 +1,12 @@
 import time
 from flask import Blueprint, request, jsonify
 import openai
+from openai import OpenAI
 
 from extensions import get_db
-from ..models.session import SessionManager
-from ..models.message import MessageManager
-from ..utils.context import trim_context
+from models.session import SessionManager
+from models.message import Message
+from utils.context import trim_context
 from config import config
 
 bp = Blueprint('chat', __name__, url_prefix='/api')
@@ -48,13 +49,15 @@ def chat():
         history = [dict(row) for row in c.fetchall()]
         
         try:
-            response = openai.ChatCompletion.create(
-                model=config.data['openai']['model'],
+            client = OpenAI(api_key=config.data["openai"]["api_key"], base_url=config.data["openai"]["base_url"])
+            response = client.chat.completions.create(
+                model=config.data["openai"]["model"],
                 messages=history,
-                temperature=config.data['openai']['temperature'],
-                max_tokens=config.data['openai']['max_tokens']
+                stream=True
             )
-            ai_response = response.choices[0].message['content']
+            ai_response = ''
+            for chunk in response:
+                ai_response += chunk.choices[0].delta.content
         except Exception as e:
             return jsonify({"error": str(e)}), 500
         

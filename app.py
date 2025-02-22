@@ -5,7 +5,7 @@ from extensions import init_app, login_manager
 from routes.admin import admin_bp
 from models.user import User
 from routes.chat import bp as chat_bp
-from routes.admin import bp as admin_bp
+from routes.admin import admin_bp as admin_bp
 from routes.debug import debug_bp as debug_bp
 
 def create_app():
@@ -36,5 +36,6 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
+    print(os.getenv('OPENAI_API_KEY'))
     app.run(host=config.data['server']['host'], 
             port=config.data['server']['port'])

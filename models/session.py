@@ -3,7 +3,7 @@ import time
 import uuid
 
 from flask import jsonify
-from ..extensions import db_conn, get_db
+from extensions import get_db
 from config import config
 
 class SessionManager:
