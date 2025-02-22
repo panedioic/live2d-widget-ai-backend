@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+*.env
+*.sqlite3
+.env.live2d-widget-ai/
+
+# 环境文件
+.env
+config.json
+
+# 日志和数据库
+*.log
+*.db
+data/
+
+# IDE
+.vscode/
+.idea/
+
+# 依赖文件
+*.pyc
+__pycache__/
