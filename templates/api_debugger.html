@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>API调试工具 - Live2D Waifu Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='debugger.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>API 调试控制台</h1>
+        
+        <!-- 会话管理区 -->
+        <div class="section">
+            <h2>会话管理</h2>
+            <button onclick="createSession()">创建新会话</button>
+            <div id="sessionResult" class="result"></div>
+        </div>
+
+        <!-- 聊天测试区 -->
+        <div class="section">
+            <h2>对话测试</h2>
+            <div class="form-group">
+                <label>会话ID:</label>
+                <input type="text" id="sessionId" placeholder="粘贴会话ID">
+            </div>
+            <div class="form-group">
+                <label>消息内容:</label>
+                <textarea id="message" rows="3"></textarea>
+            </div>
+            <button onclick="sendMessage()">发送消息</button>
+            <div id="chatResult" class="result"></div>
+        </div>
+
+        <!-- 历史记录区 -->
+        <div class="section">
+            <h2>请求历史</h2>
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>端点</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='debugger.js') }}"></script>
+</body>
+</html>
