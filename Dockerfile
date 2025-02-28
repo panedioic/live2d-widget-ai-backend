@@ -37,7 +37,7 @@ USER appuser
 COPY --from=builder --chown=appuser:appgroup /app/package*.json ./
 COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
 COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
-COPY --from=builder --chown=appuser:appgroup /app/config.example.json ./config.json
+COPY --from=builder --chown=appuser:appgroup /app/config.json ./config.json
 
 # 数据持久化配置
 VOLUME /app/data
