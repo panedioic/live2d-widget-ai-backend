@@ -29,15 +29,11 @@ WORKDIR /app
 # 安装运行时依赖
 RUN apk add --no-cache sqlite
 
-# 创建非root用户
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
-
 # 从构建阶段复制必要文件
-COPY --from=builder --chown=appuser:appgroup /app/package*.json ./
-COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
-COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
-COPY --from=builder --chown=appuser:appgroup /app/config.json ./config.json
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/config.json ./config.json
 
 # 数据持久化配置
 VOLUME /app/data
@@ -48,6 +44,6 @@ ENV DATABASE_PATH=/app/data/chat.db
 #     CMD node -e "require('http').get('http://localhost:5000/health', res => process.exit(res.statusCode !== 200))"
 
 # 启动命令（包含数据库初始化）
-CMD ["sh", "-c", "sqlite3 ${DATABASE_PATH} 'CREATE TABLE IF NOT EXISTS migrations (id INTEGER PRIMARY KEY);' && node dist/app.js"]
+CMD ["sh", "-c", "node dist/app.js"]
 
 EXPOSE 5000

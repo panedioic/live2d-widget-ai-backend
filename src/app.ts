@@ -14,8 +14,8 @@ import DBSingleton from './db';
 const initializeApp = () => {
     const app = express();
     const db = new Database(config.database.path);
-    const messageManager = new MessageManager(db, { maxMessages: config.session.maxMessages });
     const chatController = new ChatController();
+    const messageManager = new MessageManager(db, { maxMessages: config.session.maxMessages });
 
     const corsOptions = {
         origin: ['https://blog.y1yan.com', 'http://127.0.0.1:5000'],
