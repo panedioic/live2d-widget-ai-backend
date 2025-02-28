@@ -1,0 +1,44 @@
+{
+  "name": "live2d-widget-ai-backend",
+  "version": "1.0.0",
+  "description": "The backend for Live2D widget in web platform.",
+  "main": "dist/app.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "test": "jest",
+    "lint": "eslint . --ext .ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/panedioic/live2d-widget-ai-backend.git"
+  },
+  "keywords": [
+    "live2d"
+  ],
+  "author": "y1yan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/panedioic/live2d-widget-ai-backend/issues"
+  },
+  "homepage": "https://github.com/panedioic/live2d-widget-ai-backend#readme",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "better-sqlite3": "^8.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "openai": "^4.12.0",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.3",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.18",
+    "eslint": "^8.54.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.2"
+  }
+}

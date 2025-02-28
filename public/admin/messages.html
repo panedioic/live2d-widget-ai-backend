@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>对话记录管理 - 控制台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 0 2px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <!-- 标题和搜索框 -->
+        <div class="mb-6 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">用户对话记录</h1>
+            <div class="relative w-96">
+                <input type="text" id="searchInput"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="输入关键词搜索...">
+                <div id="loading" class="hidden absolute right-3 top-3">
+                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 对话记录表格 -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">会话ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">角色</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">内容</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">时间</th>
+                    </tr>
+                </thead>
+                <tbody id="messageTable" class="bg-white divide-y divide-gray-200">
+                    <!-- 数据由JavaScript动态填充 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 分页控件 -->
+        <div class="mt-4 flex justify-center items-center space-x-2" id="pagination">
+            <!-- 分页按钮由JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <script>
+// 全局状态
+let currentPage = 1
+const pageSize = 20
+let totalItems = 0
+let searchTerm = ''
+
+// 获取元素引用
+const tableBody = document.getElementById('messageTable')
+const paginationDiv = document.getElementById('pagination')
+const searchInput = document.getElementById('searchInput')
+const loading = document.getElementById('loading')
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+    loadData()
+    searchInput.addEventListener('input', debounce(handleSearch, 300))
+})
+
+// 加载数据
+async function loadData() {
+    try {
+        showLoading(true)
+        
+        const response = await fetch(
+            `/api/messages?page=${currentPage}&pageSize=${pageSize}&search=${encodeURIComponent(searchTerm)}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                }
+            }
+        )
+
+        if (!response.ok) throw new Error('获取数据失败')
+        
+        const { data, total } = await response.json()
+        totalItems = total
+        
+        renderTable(data)
+        renderPagination()
+    } catch (error) {
+        alert(error.message)
+    } finally {
+        showLoading(false)
+    }
+}
+
+// 渲染表格
+function renderTable(messages) {
+    tableBody.innerHTML = messages.map(msg => `
+        <tr>
+            <td class="px-6 py-4 text-sm font-mono">${msg.sessionId}</td>
+            <td class="px-6 py-4">
+                <span class="px-2 py-1 rounded ${getRoleBadgeClass(msg.role)}">
+                    ${msg.role}
+                </span>
+            </td>
+            <td class="px-6 py-4 max-w-[400px] truncate">
+                ${highlightText(msg.content, searchTerm)}
+            </td>
+            <td class="px-6 py-4">
+                ${new Date(msg.timestamp).toLocaleString()}
+            </td>
+        </tr>
+    `).join('')
+}
+
+// 高亮文本
+function highlightText(text, term) {
+    if (!term) return text
+    const regex = new RegExp(`(${term})`, 'gi')
+    return text.replace(regex, '<span class="highlight">$1</span>')
+}
+
+// 角色标签样式
+function getRoleBadgeClass(role) {
+    return {
+        'system': 'bg-gray-100 text-gray-800',
+        'user': 'bg-blue-100 text-blue-800',
+        'assistant': 'bg-green-100 text-green-800'
+    }[role]
+}
+
+// 渲染分页
+function renderPagination() {
+    const totalPages = Math.ceil(totalItems / pageSize)
+    let buttons = ''
+
+    for (let i = 1; i <= totalPages; i++) {
+        buttons += `
+            <button onclick="changePage(${i})" 
+                class="px-3 py-1 rounded ${i === currentPage 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-200 hover:bg-gray-300'}">
+                ${i}
+            </button>
+        `
+    }
+
+    paginationDiv.innerHTML = buttons
+}
+
+// 切换页面
+function changePage(page) {
+    currentPage = page
+    loadData()
+}
+
+// 处理搜索
+function handleSearch(e) {
+    searchTerm = e.target.value.trim()
+    currentPage = 1
+    loadData()
+}
+
+// 显示加载状态
+function showLoading(show) {
+    loading.classList.toggle('hidden', !show)
+}
+
+// 防抖函数
+function debounce(fn, delay) {
+    let timeout
+    return (...args) => {
+        clearTimeout(timeout)
+        timeout = setTimeout(() => fn.apply(this, args), delay)
+    }
+}
+    </script>
+</body>
+
+</html>
