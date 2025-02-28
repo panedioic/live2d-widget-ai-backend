@@ -12,11 +12,11 @@ RUN apk add --no-cache \
 
 # 复制依赖文件并安装
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN NODE_ENV=development npm install
 
 # 复制源码并构建
 COPY . .
-RUN NODE_ENV=development npm run build
+RUN npm run build
 
 # 清理开发依赖
 RUN npm prune --omit=dev
