@@ -16,7 +16,7 @@ RUN npm ci --omit=dev
 
 # 复制源码并构建
 COPY . .
-RUN npm run build
+RUN NODE_ENV=development npm run build
 
 # 清理开发依赖
 RUN npm prune --omit=dev
